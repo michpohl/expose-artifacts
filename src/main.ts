@@ -2,9 +2,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 const inputs = {
-  token: core.getInput('github-token', { required: true })
+  token: core.getInput('github-token', {required: true})
 }
-
 
 async function exposeArtifacts(): Promise<void> {
   const octokit = github.getOctokit(inputs.token)
@@ -13,7 +12,7 @@ async function exposeArtifacts(): Promise<void> {
     {
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      run_id: run_id
+      run_id
     }
   )
   const artifacts = listWorkflowsArtifacts.data.artifacts
@@ -21,16 +20,17 @@ async function exposeArtifacts(): Promise<void> {
   const owner = github.context.repo.owner
   const repo = github.context.repo.repo
   for (const a of artifacts) {
+    // eslint-disable-next-line no-console
     console.log(a)
-
   }
   artifacts.map(i => {
+    // eslint-disable-next-line no-console
     console.log(i)
     return {
       id: i.id,
       name: i.name,
-      suite_id: suite_id,
-      url_download: 'https://github.com/' + owner + '/' + repo + '/suites/' + suite_id + '/artifacts/' + i.id,
+      suite_id,
+      url_download: `https://github.com/${owner}/${repo}/suites/${suite_id}/artifacts/${i.id}`
     }
   })
 }
@@ -43,13 +43,12 @@ async function exposeArtifacts(): Promise<void> {
 // })
 // console.log('::endgroup::')
 
-
 async function run(): Promise<void> {
-      try {
-        await exposeArtifacts();
-      } catch (error) {
-        core.setFailed(error.message)
-      }
-    }
+  try {
+    await exposeArtifacts()
+  } catch (error) {
+    core.setFailed(error.message)
+  }
+}
 
 run()
