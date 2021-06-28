@@ -38,8 +38,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
+String.prototype.isValidEnvVar = function () {
+    const matches = this.match(/[A-Z0-9_]*/);
+    return (matches === null || matches === void 0 ? void 0 : matches.length) === 1 && matches[0] === this;
+};
 const inputs = {
-    token: core.getInput('github-token', { required: true })
+    token: core.getInput('github-token', { required: true }),
+    outputName: core.getInput('output-var-name')
 };
 function exposeArtifacts() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -54,33 +59,35 @@ function exposeArtifacts() {
         const suite_id = github.context.payload.workflow_run.check_suite_id;
         const owner = github.context.repo.owner;
         const repo = github.context.repo.repo;
+        let artifactsMap = null;
         for (const a of artifacts) {
             // eslint-disable-next-line no-console
             console.log(a);
         }
-        artifacts.map(i => {
+        artifactsMap = artifacts.map(i => {
             // eslint-disable-next-line no-console
             console.log(i);
             return {
                 id: i.id,
                 name: i.name,
-                suite_id,
                 url_download: `https://github.com/${owner}/${repo}/suites/${suite_id}/artifacts/${i.id}`
             };
         });
+        return artifactsMap;
     });
 }
-// console.log('::group::List outputs variables')
-// // Generate outputs
-// artifacts.forEach((a) => {
-//   console.log('::set-output name=' + a.name + '::' + a.url_download)
-//   console.log('set-output name=' + a.name + '::' + a.url_download)
-// })
-// console.log('::endgroup::')
+function createEnvVar(index, url) {
+    const varName = `${inputs.outputName}_${index}`;
+    core.exportVariable(varName, url);
+    core.info(`Created env var: ${varName} for artifact url: ${url}`);
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield exposeArtifacts();
+            const artifactsMap = yield exposeArtifacts();
+            for (const a of artifactsMap) {
+                createEnvVar(artifactsMap.indexOf(a), a.url_download);
+            }
         }
         catch (error) {
             core.setFailed(error.message);
