@@ -30,9 +30,13 @@ async function exposeArtifacts(): Promise<
   )
   const artifacts = listWorkflowsArtifacts.data.artifacts
   const suite_id = github.context.payload.workflow_run.check_suite_id
+  const x = github.context.payload.pull_request?.number
   const owner = github.context.repo.owner
   const repo = github.context.repo.repo
   let artifactsMap = null
+
+  // eslint-disable-next-line no-console
+  console.log(`PR number = ${x}`)
 
   for (const a of artifacts) {
     // eslint-disable-next-line no-console
