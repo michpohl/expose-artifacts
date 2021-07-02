@@ -1,6 +1,6 @@
 # Expose links to a workflow's artifacts as env vars
 
-This workflow checks if a previously run workflow has uploaded any artifacts. If artifacts are found, it exposes the links to those artifacts as environment variables that can be used in subsequent steps.
+This action checks if a previously run workflow has uploaded any artifacts. If artifacts are found, it exposes the links to those artifacts as environment variables that can be used in subsequent steps.
 It can filter the artifacts by a submitted string that must be contained, and will use a provided name for the published variables.
 
 This workflow needs to be triggered by the `workflow_run`trigger, since it needs a reference to another workflow. This is because the links to uploaded artifacts are only available **after** a workflow has completed, so if you want to fetch and use them, you have to do it in a second workflow.
