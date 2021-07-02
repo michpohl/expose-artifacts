@@ -73,10 +73,10 @@ function exposeArtifacts() {
         return artifactsMap;
     });
 }
-function createEnvVar(index, url) {
+function createEnvVar(index, name, url) {
     const varName = `${inputs.outputName}_${index}`;
     core.exportVariable(varName, url);
-    core.info(`Created env var: ${varName} for artifact url: ${url}`);
+    core.info(`Created env var: ${varName} for artifact named: ${name} with url: ${url}`);
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -84,7 +84,7 @@ function run() {
             const artifactsMap = yield exposeArtifacts();
             for (const a of artifactsMap) {
                 if (a.name.includes(inputs.stringFilter)) {
-                    createEnvVar(artifactsMap.indexOf(a), a.url_download);
+                    createEnvVar(artifactsMap.indexOf(a), a.name, a.url_download);
                 }
             }
         }

@@ -46,10 +46,12 @@ async function exposeArtifacts(): Promise<
   return artifactsMap
 }
 
-function createEnvVar(index: number, url: string): void {
+function createEnvVar(index: number, name: string, url: string): void {
   const varName = `${inputs.outputName}_${index}`
   core.exportVariable(varName, url)
-  core.info(`Created env var: ${varName} for artifact url: ${url}`)
+  core.info(
+    `Created env var: ${varName} for artifact named: ${name} with url: ${url}`
+  )
 }
 
 async function run(): Promise<void> {
@@ -57,7 +59,7 @@ async function run(): Promise<void> {
     const artifactsMap = await exposeArtifacts()
     for (const a of artifactsMap) {
       if (a.name.includes(inputs.stringFilter)) {
-        createEnvVar(artifactsMap.indexOf(a), a.url_download)
+        createEnvVar(artifactsMap.indexOf(a), a.name, a.url_download)
       }
     }
   } catch (error) {
